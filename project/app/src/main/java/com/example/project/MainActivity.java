@@ -1,5 +1,7 @@
 package com.example.project;
 
+import static com.example.project.BluetoothSocketHolder.setBluetoothSocket;
+
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothAdapter;
@@ -186,6 +188,7 @@ public class MainActivity extends AppCompatActivity {
 
             try {
                 socket = device.createRfcommSocketToServiceRecord(MY_UUID);
+                setBluetoothSocket(socket);
                 socket.connect();
                 Log.d("Bluetooth", "Connection established");
 
