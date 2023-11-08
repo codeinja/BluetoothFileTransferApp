@@ -4,7 +4,9 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.bluetooth.BluetoothSocket;
+import android.content.ContentResolver;
 import android.content.Intent;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -13,10 +15,16 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.lang.reflect.Array;
+import java.util.Arrays;
 
 public class SendReceive extends AppCompatActivity {
 
@@ -25,6 +33,8 @@ public class SendReceive extends AppCompatActivity {
     TextView txtResult;
     InputStream inputStream;
     OutputStream outputStream;
+    String line;
+    File file;
     BluetoothSocket socket = BluetoothSocketHolder.getInstance().getBluetoothSocket();
 
     @Override
@@ -35,12 +45,12 @@ public class SendReceive extends AppCompatActivity {
         txtResult = findViewById(R.id.pathDisplay);
         sendbt = findViewById(R.id.sendbutton);
         receivebt = findViewById(R.id.receivebutton);
-        if(socket!=null && socket.isConnected()) {
+        if (socket != null && socket.isConnected()) {
             try {
                 inputStream = socket.getInputStream();
                 outputStream = socket.getOutputStream();
             } catch (IOException e) {
-                e.printStackTrace(); // Handle the exception properly, e.g., log or show an error message
+                e.printStackTrace();
             }
         }
 
@@ -49,9 +59,9 @@ public class SendReceive extends AppCompatActivity {
             try {
                 if (outputStream != null) {
                     outputStream.write(sendCmd.getBytes());
-                }else{
+                } else {
                     finish();
-                    Toast.makeText(getApplicationContext(),"Error Occurred!!",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), "Error Occurred!!", Toast.LENGTH_SHORT).show();
                 }
             } catch (IOException e) {
                 e.printStackTrace();
@@ -71,13 +81,37 @@ public class SendReceive extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
+        String path;
+        Uri uri;
         if (requestCode == 100 && resultCode == RESULT_OK && data != null) {
-            Uri uri = data.getData();
-            String path = uri.getPath();
-            File file = new File(path);
+            uri = data.getData();
+            path = uri.getPath();
+            file = new File(path);
             txtResult.setText("Path: " + path + "\n" + "\n" + "File name: " + file.getName());
+            String read_data = readFile(uri);
+            Log.d("Read Data", read_data);
         }
-        super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    protected String readFile(Uri path) {
+        StringBuilder stringBuilder = new StringBuilder();
+
+        try {
+            ContentResolver contentResolver = getContentResolver();
+            InputStream inputStream = contentResolver.openInputStream(path);
+            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+            String line;
+
+            while ((line = bufferedReader.readLine()) != null) {
+                stringBuilder.append(line).append('\n');
+            }
+            bufferedReader.close();
+            inputStream.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+            return "Error reading the file";
+        }
+
+        return stringBuilder.toString();
     }
 }
