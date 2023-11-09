@@ -181,7 +181,7 @@ public class MainActivity extends AppCompatActivity {
             mybt.cancelDiscovery();
         }
 
-        UUID MY_UUID = UUID.fromString("00001105-0000-1000-8000-00805F9B34FB");
+        UUID MY_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
 
         Thread connectionThread = new Thread(() -> {
             BluetoothSocket socket = null;

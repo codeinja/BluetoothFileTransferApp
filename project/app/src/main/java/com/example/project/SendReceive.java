@@ -88,8 +88,23 @@ public class SendReceive extends AppCompatActivity {
             path = uri.getPath();
             file = new File(path);
             txtResult.setText("Path: " + path + "\n" + "\n" + "File name: " + file.getName());
+            String filename = file.getName();
+            String new_filename = "/"+filename+"\n";
+            try {
+                outputStream.write(new_filename.getBytes());
+                Log.d("Filename",new_filename);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
             String read_data = readFile(uri);
+            String calculatedCRC = calculateCRC16(read_data);
+            try {
+                outputStream.write("e49c".getBytes());
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
             Log.d("Read Data", read_data);
+            Log.d("CRC-16", String.format("0x%04X", calculatedCRC));
         }
     }
 
@@ -103,8 +118,13 @@ public class SendReceive extends AppCompatActivity {
             String line;
 
             while ((line = bufferedReader.readLine()) != null) {
+                String full_line = line+"\n";
+                outputStream.write(full_line.getBytes());
                 stringBuilder.append(line).append('\n');
             }
+
+            String eofCmd = "~EOF\n";
+            outputStream.write(eofCmd.getBytes());
             bufferedReader.close();
             inputStream.close();
         } catch (IOException e) {
@@ -113,5 +133,25 @@ public class SendReceive extends AppCompatActivity {
         }
 
         return stringBuilder.toString();
+    }
+
+    protected String calculateCRC16(String input) {
+        int crc = 0x0000; // Initial value
+        int polynomial = 0x1021; // CRC-16 polynomial
+        byte[] bytes = input.getBytes();
+
+        for (byte b : bytes) {
+            crc ^= (b & 0xFF) << 8;
+
+            for (int i = 0; i < 8; i++) {
+                if ((crc & 0x8000) != 0) {
+                    crc = (crc << 1) ^ polynomial;
+                } else {
+                    crc = crc << 1;
+                }
+            }
+        }
+        crc &= 0xFFFF; // Ensure the CRC value is a 16-bit value
+        return String.valueOf(crc); // Convert CRC to a 4-character hexadecimal string
     }
 }
