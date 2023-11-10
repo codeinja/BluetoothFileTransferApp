@@ -37,10 +37,13 @@ public class SendReceive extends AppCompatActivity {
     File file;
     BluetoothSocket socket = BluetoothSocketHolder.getInstance().getBluetoothSocket();
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_send_receive);
+
+        CRC16Calculator.generateCRCTable();
 
         txtResult = findViewById(R.id.pathDisplay);
         sendbt = findViewById(R.id.sendbutton);
@@ -96,15 +99,20 @@ public class SendReceive extends AppCompatActivity {
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
+
             String read_data = readFile(uri);
-            String calculatedCRC = calculateCRC16(read_data);
+
+            int calculatedCRC = CRC16Calculator.calculateCRC(read_data);
+
+            String CRC_to_send = String.format("0x%04X%n",calculatedCRC).substring(2);
+
             try {
-                outputStream.write("e49c".getBytes());
+                outputStream.write(CRC_to_send.getBytes());
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
             Log.d("Read Data", read_data);
-            Log.d("CRC-16", String.format("0x%04X", calculatedCRC));
+            Log.d("CRC", String.format("0x%04X%n",calculatedCRC));
         }
     }
 
@@ -118,7 +126,7 @@ public class SendReceive extends AppCompatActivity {
             String line;
 
             while ((line = bufferedReader.readLine()) != null) {
-                String full_line = line+"\n";
+                String full_line = line + "\n";
                 outputStream.write(full_line.getBytes());
                 stringBuilder.append(line).append('\n');
             }
@@ -133,25 +141,5 @@ public class SendReceive extends AppCompatActivity {
         }
 
         return stringBuilder.toString();
-    }
-
-    protected String calculateCRC16(String input) {
-        int crc = 0x0000; // Initial value
-        int polynomial = 0x1021; // CRC-16 polynomial
-        byte[] bytes = input.getBytes();
-
-        for (byte b : bytes) {
-            crc ^= (b & 0xFF) << 8;
-
-            for (int i = 0; i < 8; i++) {
-                if ((crc & 0x8000) != 0) {
-                    crc = (crc << 1) ^ polynomial;
-                } else {
-                    crc = crc << 1;
-                }
-            }
-        }
-        crc &= 0xFFFF; // Ensure the CRC value is a 16-bit value
-        return String.valueOf(crc); // Convert CRC to a 4-character hexadecimal string
     }
 }
