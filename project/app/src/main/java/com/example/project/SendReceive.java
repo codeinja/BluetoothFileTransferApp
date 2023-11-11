@@ -1,23 +1,36 @@
 package com.example.project;
 
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.bluetooth.BluetoothSocket;
 import android.content.ContentResolver;
+import android.content.ContentValues;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.ParcelFileDescriptor;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -27,13 +40,14 @@ import java.lang.reflect.Array;
 import java.util.Arrays;
 
 public class SendReceive extends AppCompatActivity {
-
+    Handler handler;
     Button sendbt;
+    int flag;
     Button receivebt;
     TextView txtResult;
     InputStream inputStream;
     OutputStream outputStream;
-    String line;
+    TextView receivedDataTextView;
     File file;
     BluetoothSocket socket = BluetoothSocketHolder.getInstance().getBluetoothSocket();
 
@@ -48,6 +62,8 @@ public class SendReceive extends AppCompatActivity {
         txtResult = findViewById(R.id.pathDisplay);
         sendbt = findViewById(R.id.sendbutton);
         receivebt = findViewById(R.id.receivebutton);
+        receivedDataTextView = findViewById(R.id.FilesView);
+
         if (socket != null && socket.isConnected()) {
             try {
                 inputStream = socket.getInputStream();
@@ -55,6 +71,14 @@ public class SendReceive extends AppCompatActivity {
             } catch (IOException e) {
                 e.printStackTrace();
             }
+
+            Thread readThread = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    readFromInputStream();
+                }
+            });
+            readThread.start();
         }
 
         sendbt.setOnClickListener(v -> {
@@ -79,6 +103,73 @@ public class SendReceive extends AppCompatActivity {
                 Toast.makeText(this, "Please install a file manager.", Toast.LENGTH_SHORT).show();
             }
         });
+
+        receivebt.setOnClickListener(v -> {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("Enter Filename");
+
+            final EditText input = new EditText(this);
+            builder.setView(input);
+
+            builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    String filename = input.getText().toString();
+                    if (!filename.isEmpty()) {
+                        sendReceiveCommand(filename);
+                    } else {
+                        Toast.makeText(getApplicationContext(), "Please enter a filename", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
+
+            builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.cancel();
+                }
+            });
+
+            builder.show();
+        });
+
+    }
+
+    private void readFromInputStream() {
+        byte[] buffer = new byte[1024];
+        int bytesRead;
+
+        try {
+            while (true) {
+                if (inputStream != null) {
+                    bytesRead = inputStream.read(buffer);
+                    if (bytesRead != -1) {
+                        final String receivedData = new String(buffer, 0, bytesRead);
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                receivedDataTextView.append(receivedData);
+                            }
+                        });
+                    } else {
+                        break;
+                    }
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    private void sendReceiveCommand(String fileName) {
+        try {
+            outputStream.write("~RECEIVE\n".getBytes());
+            outputStream.write(("/" + fileName).getBytes());
+        } catch (IOException e) {
+            e.printStackTrace();
+            Toast.makeText(this, "Error sending receive command", Toast.LENGTH_SHORT).show();
+        }
     }
 
     @Override
@@ -113,6 +204,22 @@ public class SendReceive extends AppCompatActivity {
             }
             Log.d("Read Data", read_data);
             Log.d("CRC", String.format("0x%04X%n",calculatedCRC));
+        }
+    }
+
+    public File createFile(String filename) {
+        ContentResolver resolver = getContentResolver();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(MediaStore.MediaColumns.DISPLAY_NAME, filename);
+        contentValues.put(MediaStore.MediaColumns.MIME_TYPE, "text/plain");
+        contentValues.put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_DOCUMENTS);
+
+        Uri uri = resolver.insert(MediaStore.Files.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY), contentValues);
+        if (uri != null) {
+            Log.d("File Creation: ", "created");
+            return new File(uri.getPath());
+        } else {
+            return null;
         }
     }
 

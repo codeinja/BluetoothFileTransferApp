@@ -44,6 +44,7 @@ public class MainActivity extends AppCompatActivity {
     BluetoothDevice selectedDevice;
 
     private static final int REQUEST_BLUETOOTH_PERMISSION = 3;
+    private static final int REQUEST_WRITE_EXTERNAL_STORAGE = 3;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -218,6 +219,11 @@ public class MainActivity extends AppCompatActivity {
                     Manifest.permission.BLUETOOTH_SCAN,
                     Manifest.permission.BLUETOOTH_CONNECT
             }, REQUEST_BLUETOOTH_PERMISSION);
+
+            ActivityCompat.requestPermissions(
+                    this,
+                    new String[]{Manifest.permission.MANAGE_EXTERNAL_STORAGE},
+                    REQUEST_WRITE_EXTERNAL_STORAGE);
         }
     }
 
