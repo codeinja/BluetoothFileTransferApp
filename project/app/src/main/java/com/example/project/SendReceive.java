@@ -24,6 +24,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -40,11 +41,9 @@ import java.lang.reflect.Array;
 import java.util.Arrays;
 
 public class SendReceive extends AppCompatActivity {
-    Handler handler;
     Button sendbt;
-    int flag;
     Button receivebt;
-    TextView txtResult;
+    ScrollView scrollView;
     InputStream inputStream;
     OutputStream outputStream;
     TextView receivedDataTextView;
@@ -59,7 +58,7 @@ public class SendReceive extends AppCompatActivity {
 
         CRC16Calculator.generateCRCTable();
 
-        txtResult = findViewById(R.id.pathDisplay);
+        scrollView = findViewById(R.id.scrollView);
         sendbt = findViewById(R.id.sendbutton);
         receivebt = findViewById(R.id.receivebutton);
         receivedDataTextView = findViewById(R.id.FilesView);
@@ -145,10 +144,19 @@ public class SendReceive extends AppCompatActivity {
                     bytesRead = inputStream.read(buffer);
                     if (bytesRead != -1) {
                         final String receivedData = new String(buffer, 0, bytesRead);
+
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
                                 receivedDataTextView.append(receivedData);
+
+                                // Scroll to the bottom of ScrollView
+                                scrollView.post(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        scrollView.fullScroll(ScrollView.FOCUS_DOWN);
+                                    }
+                                });
                             }
                         });
                     } else {
@@ -160,6 +168,7 @@ public class SendReceive extends AppCompatActivity {
             e.printStackTrace();
         }
     }
+
 
 
     private void sendReceiveCommand(String fileName) {
@@ -181,7 +190,6 @@ public class SendReceive extends AppCompatActivity {
             uri = data.getData();
             path = uri.getPath();
             file = new File(path);
-            txtResult.setText("Path: " + path + "\n" + "\n" + "File name: " + file.getName());
             String filename = file.getName();
             String new_filename = "/"+filename+"\n";
             try {

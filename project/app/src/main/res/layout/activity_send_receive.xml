@@ -21,38 +21,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
-        android:id="@+id/pathDisplay"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="174dp"
-        android:layout_marginEnd="179dp"
-        android:layout_marginBottom="544dp"
-        android:fontFamily="monospace"
-        android:hint="Path and File Name will be displayed here"
-        android:text=" "
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.493"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <TextView
-        android:id="@+id/FilesView"
-        android:layout_width="363dp"
-        android:layout_height="480dp"
-        android:layout_marginStart="32dp"
-        android:layout_marginTop="84dp"
-        android:layout_marginEnd="32dp"
-        android:layout_marginBottom="127dp"
-        android:hint="File Names Will Appear Here"
-        android:textAlignment="center"
-        android:textSize="24sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/pathDisplay"
-        app:layout_constraintVertical_bias="0.333" />
-
     <Button
         android:id="@+id/receivebutton"
         android:layout_width="wrap_content"
@@ -60,13 +28,37 @@
         android:layout_marginStart="160dp"
         android:layout_marginTop="10dp"
         android:layout_marginEnd="160dp"
-        android:layout_marginBottom="26dp"
         android:backgroundTint="#2196F3"
         android:fontFamily="monospace"
         android:text="Receive"
-        app:layout_constraintBottom_toTopOf="@+id/pathDisplay"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/sendbutton" />
+
+    <ScrollView
+        android:id="@+id/scrollView"
+        android:layout_width="347dp"
+        android:layout_height="514dp"
+        android:layout_marginTop="20dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.776">
+
+        <!-- A LinearLayout as the direct child of ScrollView -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <!-- Your TextView goes here -->
+            <TextView
+                android:id="@+id/FilesView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+    </ScrollView>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
