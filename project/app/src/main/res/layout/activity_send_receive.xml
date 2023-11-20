@@ -10,41 +10,40 @@
         android:id="@+id/sendbutton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="172dp"
-        android:layout_marginTop="36dp"
-        android:layout_marginEnd="175dp"
         android:backgroundTint="#4CAF50"
         android:fontFamily="monospace"
-        android:text="Send"
+        android:text="Send File"
+        app:layout_constraintBottom_toTopOf="@+id/filesScrollView"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.476"
+        app:layout_constraintHorizontal_bias="0.16"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.128" />
 
     <Button
         android:id="@+id/receivebutton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="160dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginEnd="160dp"
         android:backgroundTint="#2196F3"
         android:fontFamily="monospace"
-        android:text="Receive"
+        android:text="Receive File"
+        app:layout_constraintBottom_toTopOf="@+id/filesScrollView"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.141"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/sendbutton" />
+        app:layout_constraintTop_toBottomOf="@+id/sendbutton"
+        app:layout_constraintVertical_bias="0.524" />
 
     <ScrollView
-        android:id="@+id/scrollView"
-        android:layout_width="347dp"
-        android:layout_height="514dp"
-        android:layout_marginTop="20dp"
+        android:id="@+id/filesScrollView"
+        android:layout_width="406dp"
+        android:layout_height="568dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.4"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.776">
+        app:layout_constraintVertical_bias="0.969">
 
         <!-- A LinearLayout as the direct child of ScrollView -->
         <LinearLayout
@@ -54,11 +53,39 @@
 
             <!-- Your TextView goes here -->
             <TextView
-                android:id="@+id/FilesView"
+                android:id="@+id/listFilesView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
         </LinearLayout>
     </ScrollView>
+
+    <Button
+        android:id="@+id/listFiles"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:backgroundTint="#FF9800"
+        android:fontFamily="monospace"
+        android:text="List All Files"
+        app:layout_constraintBottom_toTopOf="@+id/filesScrollView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.67"
+        app:layout_constraintStart_toEndOf="@+id/sendbutton"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.128" />
+
+    <Button
+        android:id="@+id/DeleteFile"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:backgroundTint="#E91E63"
+        android:fontFamily="monospace"
+        android:text="Delete File"
+        app:layout_constraintBottom_toTopOf="@+id/filesScrollView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.603"
+        app:layout_constraintStart_toEndOf="@+id/receivebutton"
+        app:layout_constraintTop_toBottomOf="@+id/listFiles"
+        app:layout_constraintVertical_bias="0.524" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

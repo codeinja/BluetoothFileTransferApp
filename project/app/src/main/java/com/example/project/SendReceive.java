@@ -9,39 +9,28 @@ import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.Handler;
-import android.os.Looper;
-import android.os.ParcelFileDescriptor;
 import android.provider.MediaStore;
 import android.util.Log;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ListView;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.lang.reflect.Array;
-import java.util.Arrays;
 
 public class SendReceive extends AppCompatActivity {
     Button sendbt;
+    Button listFilesbt;
+    Button deletebt;
     Button receivebt;
     ScrollView scrollView;
     InputStream inputStream;
@@ -58,10 +47,12 @@ public class SendReceive extends AppCompatActivity {
 
         CRC16Calculator.generateCRCTable();
 
-        scrollView = findViewById(R.id.scrollView);
+        listFilesbt = findViewById(R.id.listFiles);
+        deletebt = findViewById(R.id.DeleteFile);
+        scrollView = findViewById(R.id.filesScrollView);
         sendbt = findViewById(R.id.sendbutton);
         receivebt = findViewById(R.id.receivebutton);
-        receivedDataTextView = findViewById(R.id.FilesView);
+        receivedDataTextView = findViewById(R.id.listFilesView);
 
         if (socket != null && socket.isConnected()) {
             try {
@@ -100,6 +91,14 @@ public class SendReceive extends AppCompatActivity {
                 startActivityForResult(Intent.createChooser(intent, "Select a file"), 100);
             } catch (Exception exception) {
                 Toast.makeText(this, "Please install a file manager.", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        listFilesbt.setOnClickListener(v -> {
+            try {
+                outputStream.write("~LISTFILES".getBytes());
+            } catch (IOException e) {
+                throw new RuntimeException(e);
             }
         });
 
@@ -150,7 +149,6 @@ public class SendReceive extends AppCompatActivity {
                             public void run() {
                                 receivedDataTextView.append(receivedData);
 
-                                // Scroll to the bottom of ScrollView
                                 scrollView.post(new Runnable() {
                                     @Override
                                     public void run() {
@@ -212,22 +210,6 @@ public class SendReceive extends AppCompatActivity {
             }
             Log.d("Read Data", read_data);
             Log.d("CRC", String.format("0x%04X%n",calculatedCRC));
-        }
-    }
-
-    public File createFile(String filename) {
-        ContentResolver resolver = getContentResolver();
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(MediaStore.MediaColumns.DISPLAY_NAME, filename);
-        contentValues.put(MediaStore.MediaColumns.MIME_TYPE, "text/plain");
-        contentValues.put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_DOCUMENTS);
-
-        Uri uri = resolver.insert(MediaStore.Files.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY), contentValues);
-        if (uri != null) {
-            Log.d("File Creation: ", "created");
-            return new File(uri.getPath());
-        } else {
-            return null;
         }
     }
 
