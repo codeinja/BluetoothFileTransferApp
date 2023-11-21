@@ -131,6 +131,40 @@ public class SendReceive extends AppCompatActivity {
             builder.show();
         });
 
+        deletebt.setOnClickListener(v -> {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("Enter Filename");
+
+            final EditText input = new EditText(this);
+            builder.setView(input);
+
+            builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    String filename = input.getText().toString();
+                    if (!filename.isEmpty()) {
+                        try {
+                            outputStream.write("~DELETE\n".getBytes());
+                            outputStream.write(("/"+filename+"\n").getBytes());
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
+                    } else {
+                        Toast.makeText(getApplicationContext(), "Please enter a filename", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
+
+            builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.cancel();
+                }
+            });
+
+            builder.show();
+        });
+
     }
 
     private void readFromInputStream() {
@@ -166,8 +200,6 @@ public class SendReceive extends AppCompatActivity {
             e.printStackTrace();
         }
     }
-
-
 
     private void sendReceiveCommand(String fileName) {
         try {

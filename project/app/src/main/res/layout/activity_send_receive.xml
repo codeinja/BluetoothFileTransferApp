@@ -10,7 +10,7 @@
         android:id="@+id/sendbutton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:backgroundTint="#4CAF50"
+        android:backgroundTint="#90EE90"
         android:fontFamily="monospace"
         android:text="Send File"
         app:layout_constraintBottom_toTopOf="@+id/filesScrollView"
@@ -24,15 +24,15 @@
         android:id="@+id/receivebutton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:backgroundTint="#2196F3"
+        android:backgroundTint="#9090EE"
         android:fontFamily="monospace"
-        android:text="Receive File"
+        android:text="View File"
         app:layout_constraintBottom_toTopOf="@+id/filesScrollView"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.141"
+        app:layout_constraintHorizontal_bias="0.16"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/sendbutton"
-        app:layout_constraintVertical_bias="0.524" />
+        app:layout_constraintVertical_bias="0.541" />
 
     <ScrollView
         android:id="@+id/filesScrollView"
@@ -63,29 +63,29 @@
         android:id="@+id/listFiles"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:backgroundTint="#FF9800"
+        android:backgroundTint="#FFD580"
         android:fontFamily="monospace"
         android:text="List All Files"
         app:layout_constraintBottom_toTopOf="@+id/filesScrollView"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.67"
+        app:layout_constraintHorizontal_bias="0.589"
         app:layout_constraintStart_toEndOf="@+id/sendbutton"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.128" />
+        app:layout_constraintVertical_bias="0.127" />
 
     <Button
         android:id="@+id/DeleteFile"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:backgroundTint="#E91E63"
+        android:backgroundTint="#EE9090"
         android:fontFamily="monospace"
         android:text="Delete File"
         app:layout_constraintBottom_toTopOf="@+id/filesScrollView"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.603"
+        app:layout_constraintHorizontal_bias="0.565"
         app:layout_constraintStart_toEndOf="@+id/receivebutton"
         app:layout_constraintTop_toBottomOf="@+id/listFiles"
-        app:layout_constraintVertical_bias="0.524" />
+        app:layout_constraintVertical_bias="0.541" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
