@@ -181,8 +181,11 @@ public class SendReceive extends AppCompatActivity {
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                receivedDataTextView.append(receivedData);
-
+                                if(receivedData.contains("~EOF")) {
+                                    receivedDataTextView.append(receivedData.substring(0,receivedData.indexOf("~EOF")));
+                                }else{
+                                    receivedDataTextView.append(receivedData);
+                                }
                                 scrollView.post(new Runnable() {
                                     @Override
                                     public void run() {
