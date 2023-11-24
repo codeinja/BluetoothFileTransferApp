@@ -30,6 +30,7 @@ import java.io.OutputStream;
 public class SendReceive extends AppCompatActivity {
     Button sendbt;
     Button listFilesbt;
+    Button clearbt;
     Button deletebt;
     Button receivebt;
     ScrollView scrollView;
@@ -47,6 +48,7 @@ public class SendReceive extends AppCompatActivity {
 
         CRC16Calculator.generateCRCTable();
 
+        clearbt = findViewById(R.id.clearbt);
         listFilesbt = findViewById(R.id.listFiles);
         deletebt = findViewById(R.id.DeleteFile);
         scrollView = findViewById(R.id.filesScrollView);
@@ -100,6 +102,10 @@ public class SendReceive extends AppCompatActivity {
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
+        });
+
+        clearbt.setOnClickListener(v -> {
+            receivedDataTextView.setText("");
         });
 
         receivebt.setOnClickListener(v -> {
